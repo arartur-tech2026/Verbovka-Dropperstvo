@@ -3,23 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Радар угроз: Фишинг и Социальная инженерия</title>
+  <title>Кейс-аналитик: Вербовка и Дропперство</title>
   <style>
     :root {
-      --bg-main: #0f172a;
-      --bg-surface: #1e293b;
-      --card-bg: #ffffff;
-      --text-card: #0f172a;
+      --bg-main: #0b1120;
+      --bg-surface: #131d31;
+      --bg-card: #1e293b;
+      --border-color: #2e3f59;
+      --border-accent: #06b6d4;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-light: #f8fafc;
-      --threat: #ef4444;
-      --threat-glow: rgba(239, 68, 68, 0.35);
-      --safe: #10b981;
-      --safe-glow: rgba(16, 185, 129, 0.35);
-      --cyan: #06b6d4;
-      --border-color: #334155;
-      --shadow-card: 0 20px 35px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-      --radius-card: 24px;
+      --text-dim: #64748b;
+      
+      --flag-red: #ef4444;
+      --flag-red-bg: rgba(239, 68, 68, 0.22);
+      --flag-red-glow: rgba(239, 68, 68, 0.45);
+      
+      --safe-green: #10b981;
+      --safe-green-bg: rgba(16, 185, 129, 0.2);
+      
+      --cyber-cyan: #06b6d4;
+      --cyber-cyan-glow: rgba(6, 182, 212, 0.35);
+      
+      --amber-warn: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.2);
+      
+      --shadow-bubble: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
     }
 
     * {
@@ -41,30 +53,29 @@
       overflow: hidden;
       overscroll-behavior: none;
       background-color: var(--bg-main);
-      color: var(--text-light);
+      color: var(--text-main);
       touch-action: none;
       display: flex;
       flex-direction: column;
     }
 
-    /* ФОНОВАЯ СЕТКА КИБЕРБЕЗОПАСНОСТИ */
-    .cyber-bg {
+    .cyber-grid {
       position: absolute;
       inset: 0;
       background-image: 
-        radial-gradient(circle at 50% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 50% 10%, rgba(6, 182, 212, 0.14) 0%, transparent 65%),
+        radial-gradient(circle at 85% 85%, rgba(239, 68, 68, 0.08) 0%, transparent 55%),
         linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 36px 36px, 36px 36px;
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
       z-index: 1;
       pointer-events: none;
     }
 
-    /* --- СТАРТОВЫЙ ЭКРАН --- */
     .splash-screen {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      background: radial-gradient(circle at center, #172339 0%, #0b1120 100%);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -75,89 +86,116 @@
       overflow: hidden;
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
+
     .splash-screen.hidden {
       opacity: 0;
       visibility: hidden;
     }
-    .radar-icon-wrap {
-      width: 80px;
-      height: 80px;
+
+    .scanner-badge {
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       background: rgba(6, 182, 212, 0.1);
-      border: 2px solid var(--cyan);
+      border: 2px solid var(--cyber-cyan);
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 1.5rem;
-      box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
-      animation: radarScan 3s infinite linear;
+      box-shadow: 0 0 35px var(--cyber-cyan-glow);
+      animation: pulseScanner 2.4s infinite ease-in-out;
     }
-    .radar-icon-wrap svg {
+
+    .scanner-badge svg {
       width: 44px;
       height: 44px;
-      stroke: var(--cyan);
+      stroke: var(--cyber-cyan);
       fill: none;
     }
 
-    @keyframes radarScan {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes pulseScanner {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
+      50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(6, 182, 212, 0.6); }
     }
 
     .splash-title {
-      font-size: clamp(1.8rem, 7vw, 3rem);
+      font-size: clamp(1.8rem, 7.5vw, 3rem);
       font-weight: 900;
       letter-spacing: 1.5px;
+      line-height: 1.15;
       margin-bottom: 0.5rem;
       background: linear-gradient(135deg, #f8fafc 0%, #38bdf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      line-height: 1.15;
     }
+
     .splash-tag {
-      display: inline-block;
-      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
       border-radius: 99px;
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.4);
       color: #fca5a5;
       font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      margin-bottom: 1.4rem;
       text-transform: uppercase;
     }
+
+    .splash-tag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--flag-red);
+      box-shadow: 0 0 8px var(--flag-red);
+      animation: blinkDot 1s infinite alternate;
+    }
+
+    @keyframes blinkDot {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
     .splash-instruction {
-      font-size: clamp(0.92rem, 3.2vw, 1.1rem);
+      font-size: clamp(0.92rem, 3.2vw, 1.08rem);
       color: var(--text-muted);
-      max-width: 440px;
-      line-height: 1.55;
+      max-width: 480px;
+      line-height: 1.6;
       margin-bottom: 2.2rem;
     }
+
     .splash-instruction strong {
       color: #f8fafc;
     }
-    .splash-instruction .threat-word {
-      color: var(--threat);
+
+    .splash-instruction .target-word {
+      color: #f87171;
+      font-weight: 800;
     }
-    .splash-instruction .safe-word {
-      color: var(--safe);
+
+    .splash-instruction .penalty-word {
+      color: #fbbf24;
+      font-weight: 800;
     }
 
     .btn-start {
-      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      background: linear-gradient(135deg, var(--cyber-cyan), #2563eb);
       color: #ffffff;
       border: none;
-      padding: 1rem 3.2rem;
+      padding: 1rem 3.4rem;
       border-radius: 99px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       cursor: pointer;
-      box-shadow: 0 4px 25px rgba(6, 182, 212, 0.4);
+      box-shadow: 0 4px 25px rgba(6, 182, 212, 0.45);
       animation: pulseBtn 2s infinite;
       transition: transform 0.2s;
     }
+
     .btn-start:active {
       transform: scale(0.95);
     }
@@ -168,7 +206,6 @@
       100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
     }
 
-    /* --- ОСНОВНОЙ ИНТЕРФЕЙС --- */
     .app-container {
       position: relative;
       z-index: 10;
@@ -176,71 +213,101 @@
       flex-direction: column;
       height: 100%;
       width: 100%;
-      max-width: 580px;
+      max-width: 680px;
       margin: 0 auto;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.4s ease;
       overflow: hidden;
     }
+
     .app-container.visible {
       opacity: 1;
       visibility: visible;
     }
+
     .app-container.shake {
-      animation: screenShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      animation: appShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
 
-    @keyframes screenShake {
+    @keyframes appShake {
       10%, 90% { transform: translate3d(-3px, 0, 0); }
       20%, 80% { transform: translate3d(5px, 0, 0); }
       30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    /* ВЕРХНЯЯ ПАНЕЛЬ */
     .header-bar {
       flex-shrink: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: max(14px, env(safe-area-inset-top)) 18px 8px;
-      gap: 12px;
+      padding: max(12px, env(safe-area-inset-top)) 16px 8px;
+      gap: 8px;
       z-index: 20;
     }
 
-    .status-badge {
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .case-count-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--cyber-cyan);
+    }
+
+    .case-title {
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      font-weight: 800;
+      color: #f8fafc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .timer-badge {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(30, 41, 59, 0.7);
-      border: 1px solid var(--border-color);
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.35);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 99px;
       font-size: 0.88rem;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
-      color: #f8fafc;
+      color: #38bdf8;
     }
-    .status-badge svg {
-      width: 16px;
-      height: 16px;
+
+    .timer-badge svg {
+      width: 15px;
+      height: 15px;
       stroke: currentColor;
       fill: none;
     }
-    .status-badge.timer {
-      color: #38bdf8;
-      border-color: rgba(56, 189, 248, 0.4);
-      position: relative;
-    }
+
     .penalty-flash {
       position: absolute;
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      color: var(--threat);
+      color: var(--flag-red);
       font-size: 0.75rem;
       font-weight: 800;
       white-space: nowrap;
@@ -248,47 +315,37 @@
       pointer-events: none;
       transition: all 0.3s ease;
     }
+
     .penalty-flash.show {
       opacity: 1;
       transform: translate(-50%, 4px);
-    }
-
-    .counter-badge {
-      color: var(--text-muted);
-    }
-    .counter-badge strong {
-      color: #f8fafc;
-    }
-
-    .header-right-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .btn-fullscreen {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(30, 41, 59, 0.7);
+      background: rgba(30, 41, 59, 0.75);
       border: 1px solid var(--border-color);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      padding: 7px;
+      padding: 8px;
       border-radius: 99px;
-      color: #f8fafc;
+      color: #cbd5e1;
       cursor: pointer;
       transition: all 0.2s ease;
       outline: none;
     }
+
     .btn-fullscreen:hover {
-      border-color: var(--cyan);
-      color: var(--cyan);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.35);
+      border-color: var(--cyber-cyan);
+      color: var(--cyber-cyan);
     }
+
     .btn-fullscreen:active {
       transform: scale(0.9);
     }
+
     .btn-fullscreen svg {
       width: 16px;
       height: 16px;
@@ -296,243 +353,312 @@
       fill: none;
     }
 
-    /* ИГРОВОЕ ПОЛЕ */
-    .game-board {
-      flex: 1;
-      position: relative;
+    .investigation-tracker {
+      flex-shrink: 0;
+      padding: 4px 16px 10px;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 12px 18px;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .cards-stack {
-      position: relative;
-      width: 100%;
-      max-width: 380px;
-      height: 60vh;
-      max-height: 480px;
-      min-height: 340px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card-element {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: var(--card-bg);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-card);
-      padding: 24px 20px 20px;
-      display: flex;
-      flex-direction: column;
       justify-content: space-between;
-      cursor: grab;
-      touch-action: pan-y;
-      will-change: transform;
-      z-index: 10;
-    }
-    .card-element:active {
-      cursor: grabbing;
+      gap: 12px;
+      z-index: 15;
     }
 
-    .card-context {
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #64748b;
+    .tracker-label {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 8px;
-    }
-    .card-context-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 6px var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
     }
 
-    .card-body {
-      flex: 1;
+    .tracker-label-flag {
+      color: var(--flag-red);
+      font-size: 0.95rem;
+    }
+
+    .flags-indicators {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .flag-slot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1.5px dashed var(--border-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      font-size: 0.8rem;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .flag-slot.filled {
+      border-style: solid;
+      border-color: var(--flag-red);
+      background: var(--flag-red-bg);
+      box-shadow: 0 0 12px var(--flag-red-glow);
+      transform: scale(1.1);
+      animation: popSlot 0.3s ease;
+    }
+
+    @keyframes popSlot {
+      0% { transform: scale(0.7); }
+      70% { transform: scale(1.25); }
+      100% { transform: scale(1.1); }
+    }
+
+    .chat-viewport {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8px 16px 14px;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .intercept-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      margin-bottom: 12px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--cyber-cyan);
+    }
+
+    .intercept-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ef4444;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+      animation: blinkDot 0.8s infinite alternate;
+    }
+
+    .chat-bubble-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-bubble);
+      padding: 18px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      max-height: 100%;
       overflow-y: auto;
       overscroll-behavior: contain;
+      touch-action: pan-y;
       scrollbar-width: none;
+      transition: filter 0.3s ease;
     }
-    .card-body::-webkit-scrollbar {
+
+    .chat-bubble-card::-webkit-scrollbar {
       display: none;
     }
 
-    .card-text {
-      font-size: clamp(1rem, 4vw, 1.25rem);
-      font-weight: 700;
-      line-height: 1.45;
-      color: var(--text-card);
+    .chat-bubble-card.frozen {
+      filter: blur(4px) brightness(0.6);
+      pointer-events: none;
+    }
+
+    .sender-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .sender-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      border: 2px solid var(--cyber-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyber-cyan);
+      box-shadow: 0 0 14px var(--cyber-cyan-glow);
+      flex-shrink: 0;
+    }
+
+    .sender-avatar svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .sender-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .sender-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #f8fafc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sender-channel {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .message-text {
+      font-size: clamp(0.98rem, 3.8vw, 1.16rem);
+      line-height: 1.68;
+      color: #e2e8f0;
       word-break: normal;
       overflow-wrap: break-word;
       hyphens: none;
     }
 
-    .card-footer {
-      margin-top: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.76rem;
+    .chunk {
+      display: inline;
+      position: relative;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 2px 5px;
+      margin: 0 1px;
+      transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1.5px dashed rgba(148, 163, 184, 0.35);
+    }
+
+    .chunk:hover {
+      background: rgba(6, 182, 212, 0.15);
+      border-bottom-color: var(--cyber-cyan);
+    }
+
+    .chunk:active {
+      background: rgba(6, 182, 212, 0.28);
+    }
+
+    .chunk.flag-exposed {
+      background: var(--flag-red) !important;
+      color: #ffffff !important;
+      font-weight: 800;
+      border-bottom: none !important;
+      box-shadow: 0 0 14px var(--flag-red-glow);
+      cursor: default;
+      animation: flagPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes flagPop {
+      0% { transform: scale(0.94); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .chunk.chunk-error-flash {
+      background: var(--amber-warn) !important;
+      color: #0f172a !important;
       font-weight: 700;
-      text-transform: uppercase;
-      color: #94a3b8;
-      border-top: 1px solid #f1f5f9;
-      padding-top: 10px;
+      border-bottom: none !important;
+      animation: chunkShake 0.35s ease;
     }
 
-    /* ШТАМПЫ СВАЙПА */
-    .stamp-badge {
-      position: absolute;
-      top: 24px;
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 1.15rem;
-      font-weight: 900;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      border: 3.5px solid;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 30;
-      transition: opacity 0.1s ease;
-    }
-    .stamp-threat {
-      right: 20px;
-      color: var(--threat);
-      border-color: var(--threat);
-      transform: rotate(14deg);
-      background: rgba(239, 68, 68, 0.08);
-    }
-    .stamp-safe {
-      left: 20px;
-      color: var(--safe);
-      border-color: var(--safe);
-      transform: rotate(-14deg);
-      background: rgba(16, 185, 129, 0.08);
+    @keyframes chunkShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
     }
 
-    /* ПАНЕЛЬ КНОПОК ДЕЙСТВИЯ */
-    .controls-bar {
+    .chat-footer-bar {
       flex-shrink: 0;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2.2rem;
-      padding: 10px 18px max(24px, env(safe-area-inset-bottom));
-      z-index: 20;
-    }
-
-    .btn-choice {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      border: 2px solid;
-      background: var(--bg-surface);
-      display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      outline: none;
-    }
-    .btn-choice:active {
-      transform: scale(0.88);
-    }
-
-    .btn-threat-choice {
-      border-color: rgba(239, 68, 68, 0.5);
-      color: var(--threat);
-    }
-    .btn-threat-choice:hover {
-      background: var(--threat);
-      color: #ffffff;
-      box-shadow: 0 0 25px var(--threat-glow);
+      gap: 8px;
+      padding: 6px 16px max(14px, env(safe-area-inset-bottom));
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .btn-safe-choice {
-      border-color: rgba(16, 185, 129, 0.5);
-      color: var(--safe);
-    }
-    .btn-safe-choice:hover {
-      background: var(--safe);
-      color: #ffffff;
-      box-shadow: 0 0 25px var(--safe-glow);
-    }
-
-    .btn-choice svg {
-      width: 28px;
-      height: 28px;
+    .chat-footer-bar svg {
+      width: 14px;
+      height: 14px;
       fill: currentColor;
     }
-    .btn-label {
-      font-size: 0.65rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
 
-    /* --- ПОП-АП ФАТАЛЬНОЙ ОШИБКИ --- */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(11, 17, 32, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 99999;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 18px;
+      padding: 16px;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.25s ease;
+      transition: all 0.28s ease;
     }
+
     .modal-overlay.visible {
       opacity: 1;
       visibility: visible;
     }
 
-    .error-dialog {
+    .threat-dialog {
       width: 100%;
-      max-width: 440px;
-      background: #1e293b;
-      border: 2px solid var(--threat);
+      max-width: 480px;
+      background: #172339;
+      border: 2px solid var(--flag-red);
       border-radius: 24px;
-      box-shadow: 0 0 50px rgba(239, 68, 68, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
       padding: 24px 20px 20px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       transform: scale(0.92);
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      max-height: 88vh;
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-height: 90vh;
       overflow-y: auto;
       overscroll-behavior: contain;
+      touch-action: pan-y;
     }
-    .modal-overlay.visible .error-dialog {
+
+    .modal-overlay.visible .threat-dialog {
       transform: scale(1);
     }
 
@@ -541,58 +667,66 @@
       height: 64px;
       border-radius: 50%;
       background: rgba(239, 68, 68, 0.15);
-      border: 2px solid var(--threat);
+      border: 2px solid var(--flag-red);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 14px;
-      box-shadow: 0 0 20px var(--threat-glow);
-      animation: pulseHazard 1.5s infinite;
+      margin-bottom: 12px;
+      box-shadow: 0 0 25px var(--flag-red-glow);
+      animation: pulseHazard 1.6s infinite;
     }
+
     .hazard-badge svg {
-      width: 32px;
-      height: 32px;
-      fill: var(--threat);
+      width: 34px;
+      height: 34px;
+      fill: var(--flag-red);
     }
 
     @keyframes pulseHazard {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
+      50% { transform: scale(1.08); }
     }
 
-    .modal-title {
-      font-size: 1.4rem;
+    .threat-title {
+      font-size: 1.35rem;
       font-weight: 900;
       color: #f87171;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
       text-transform: uppercase;
     }
-    .modal-penalty-alert {
+
+    .threat-subtitle {
       font-size: 0.82rem;
       font-weight: 700;
-      color: #fca5a5;
-      background: rgba(239, 68, 68, 0.2);
-      padding: 4px 12px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      background: rgba(239, 68, 68, 0.15);
+      padding: 4px 14px;
       border-radius: 99px;
-      margin-bottom: 14px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
-    .modal-feedback {
-      background: rgba(15, 23, 42, 0.75);
+
+    .feedback-box {
+      width: 100%;
+      background: rgba(11, 17, 32, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
       padding: 14px 16px;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.55;
       color: #e2e8f0;
       text-align: left;
       margin-bottom: 20px;
-      width: 100%;
     }
 
-    .btn-continue {
+    .feedback-box strong {
+      color: #f87171;
+    }
+
+    .btn-next-case {
       width: 100%;
-      background: linear-gradient(135deg, var(--threat), #dc2626);
+      background: linear-gradient(135deg, var(--flag-red), #dc2626);
       color: #ffffff;
       border: none;
       border-radius: 14px;
@@ -601,52 +735,55 @@
       font-weight: 800;
       letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.45);
       transition: all 0.2s;
     }
-    .btn-continue:active {
+
+    .btn-next-case:active {
       transform: scale(0.97);
     }
 
-    /* --- ФИНАЛЬНЫЙ ЭКРАН --- */
     .finish-dialog {
       width: 100%;
-      max-width: 440px;
-      background: #1e293b;
-      border: 2px solid var(--safe);
+      max-width: 460px;
+      background: #172339;
+      border: 2px solid var(--safe-green);
       border-radius: 24px;
-      box-shadow: 0 0 50px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 55px rgba(16, 185, 129, 0.4);
       padding: 24px 20px 20px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       transform: scale(0.92);
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       max-height: 90vh;
       overflow-y: auto;
       overscroll-behavior: contain;
+      touch-action: pan-y;
     }
+
     .modal-overlay.visible .finish-dialog {
       transform: scale(1);
     }
 
     .shield-badge {
-      width: 68px;
-      height: 68px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       background: rgba(16, 185, 129, 0.15);
-      border: 2px solid var(--safe);
+      border: 2px solid var(--safe-green);
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 14px;
-      box-shadow: 0 0 25px var(--safe-glow);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.45);
     }
+
     .shield-badge svg {
       width: 36px;
       height: 36px;
-      fill: var(--safe);
+      fill: var(--safe-green);
     }
 
     .finish-title {
@@ -654,8 +791,9 @@
       font-weight: 900;
       color: #34d399;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
+
     .finish-subtitle {
       font-size: 0.88rem;
       color: var(--text-muted);
@@ -664,39 +802,43 @@
 
     .stats-table {
       width: 100%;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(11, 17, 32, 0.7);
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 12px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 11px;
       margin-bottom: 18px;
       text-align: left;
     }
+
     .stats-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 0.88rem;
     }
+
     .stats-item .label {
       color: var(--text-muted);
       font-weight: 600;
     }
+
     .stats-item .val {
       color: #f8fafc;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
     }
+
     .stats-item .val.highlight {
       color: #38bdf8;
       font-size: 1.05rem;
     }
 
-    .btn-download-cert {
+    .btn-download-act {
       width: 100%;
-      background: linear-gradient(135deg, var(--safe), #059669);
+      background: linear-gradient(135deg, var(--safe-green), #059669);
       color: #ffffff;
       border: none;
       border-radius: 14px;
@@ -713,10 +855,12 @@
       margin-bottom: 10px;
       transition: all 0.2s;
     }
-    .btn-download-cert:active {
+
+    .btn-download-act:active {
       transform: scale(0.97);
     }
-    .btn-download-cert svg {
+
+    .btn-download-act svg {
       width: 20px;
       height: 20px;
       fill: currentColor;
@@ -734,38 +878,36 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .btn-restart:active {
       background: rgba(255, 255, 255, 0.15);
-    }
-
-    #text-measurer {
-      position: absolute;
-      left: -9999px;
-      visibility: hidden;
-      font-weight: 700;
-      line-height: 1.45;
-      word-break: normal;
-      overflow-wrap: break-word;
-      hyphens: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="cyber-bg"></div>
+  <div class="cyber-grid"></div>
 
   <svg style="display: none;">
     <defs>
+      <symbol id="icon-scanner" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2m12 0h2a2 2 0 0 1 2 2v2M3 17v2a2 2 0 0 0 2 2h2m12 0h2a2 2 0 0 0 2-2v-2"></path>
+        <circle cx="12" cy="12" r="4"></circle>
+        <line x1="12" y1="3" x2="12" y2="7"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+        <line x1="3" y1="12" x2="7" y2="12"></line>
+        <line x1="17" y1="12" x2="21" y2="12"></line>
+      </symbol>
       <symbol id="icon-timer" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="13" r="8"></circle>
         <path d="M12 9v4l2.5 2.5"></path>
         <path d="M10 2h4"></path>
       </symbol>
-      <symbol id="icon-cross" viewBox="0 0 24 24">
-        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      <symbol id="icon-avatar" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
       </symbol>
-      <symbol id="icon-check" viewBox="0 0 24 24">
-        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+      <symbol id="icon-flag" viewBox="0 0 24 24">
+        <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
       </symbol>
       <symbol id="icon-hazard" viewBox="0 0 24 24">
         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
@@ -782,43 +924,41 @@
       <symbol id="icon-minimize" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
       </symbol>
+      <symbol id="icon-target" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v2h-2zm0 4h2v6h-2z"/>
+      </symbol>
     </defs>
   </svg>
 
-  <div id="text-measurer"></div>
-
-  <!-- СТАРТОВЫЙ ЭКРАН -->
   <div id="splash" class="splash-screen">
-    <div class="radar-icon-wrap">
-      <svg viewBox="0 0 24 24" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M12 2a10 10 0 0 1 10 10"></path>
-        <path d="M12 12L19 5"></path>
-        <circle cx="12" cy="12" r="4"></circle>
-      </svg>
+    <div class="scanner-badge">
+      <svg><use href="#icon-scanner"></use></svg>
     </div>
-    <h1 class="splash-title">РАДАР УГРОЗ</h1>
-    <div class="splash-tag">Кибербезопасность • Социоинженерия</div>
+    <h1 class="splash-title">КЕЙС–АНАЛИТИК</h1>
+    <div class="splash-tag">
+      <span class="splash-tag-dot"></span>
+      <span>Вербовка и Дропперство</span>
+    </div>
     <p class="splash-instruction">
-      Свайп <strong>ВПРАВО</strong> – <span class="safe-word">БЕЗОПАСНО</span>.<br>
-      Свайп <strong>ВЛЕВО</strong> – <span class="threat-word">УГРОЗА / СКАМ</span>.<br>
-      Ошибешься – получишь <strong>+20 сек штрафного времени</strong> и разбор ошибки.<br>
+      Ты – <strong>кибер-следователь</strong>. Перед тобой перехваты переписок.<br>
+      В каждом диалоге спрятано ровно <span class="target-word">3 «красных флага»</span> (криминальных триггера).<br>
+      Найди и тапни на них! Ошибешься – получишь штраф <span class="penalty-word">+30 секунд</span>.<br>
       Готов?
     </p>
-    <button id="btn-start" class="btn-start">НАЧАТЬ АУДИТ</button>
+    <button id="btn-start" class="btn-start">НАЧАТЬ РАССЛЕДОВАНИЕ</button>
   </div>
 
-  <!-- ОСНОВНОЙ ЭКРАН ТРЕНАЖЕРА -->
   <div id="app" class="app-container">
     <header class="header-bar">
-      <div class="status-badge timer" id="timer-box">
-        <svg><use href="#icon-timer"></use></svg>
-        <span id="timer-display">00:00</span>
-        <span class="penalty-flash" id="penalty-flash">+20с ШТРАФ!</span>
+      <div class="header-left">
+        <span class="case-count-tag" id="case-count-display">ДЕЛО 1 ИЗ 10</span>
+        <h2 class="case-title" id="case-title-display">Вербовка дроппера</h2>
       </div>
-      <div class="header-right-group">
-        <div class="status-badge counter-badge">
-          <span id="counter-display">1 / 25</span>
+      <div class="header-right">
+        <div class="timer-badge" id="timer-box">
+          <svg><use href="#icon-timer"></use></svg>
+          <span id="timer-display">00:00</span>
+          <span class="penalty-flash" id="penalty-flash">+30с ШТРАФ!</span>
         </div>
         <button class="btn-fullscreen" id="btn-fullscreen" aria-label="Полноэкранный режим" title="На весь экран">
           <svg><use id="icon-fullscreen-use" href="#icon-maximize"></use></svg>
@@ -826,259 +966,174 @@
       </div>
     </header>
 
-    <main class="game-board">
-      <div class="cards-stack" id="cards-stack"></div>
+    <div class="investigation-tracker">
+      <div class="tracker-label">
+        <span class="tracker-label-flag">🚩</span>
+        <span>Улики в диалоге: <strong id="clues-count" style="color: #f8fafc;">0 / 3</strong></span>
+      </div>
+      <div class="flags-indicators" id="flags-indicators">
+        <div class="flag-slot" id="slot-0">1</div>
+        <div class="flag-slot" id="slot-1">2</div>
+        <div class="flag-slot" id="slot-2">3</div>
+      </div>
+    </div>
+
+    <main class="chat-viewport">
+      <div class="intercept-banner">
+        <span>ПЕРЕХВАТ СООБЩЕНИЯ • SECURE ARCHIVE</span>
+        <div class="intercept-live">
+          <span class="live-dot"></span>
+          <span>LIVE RECORD</span>
+        </div>
+      </div>
+
+      <div class="chat-bubble-card" id="chat-bubble">
+        <div class="sender-profile">
+          <div class="sender-avatar">
+            <svg><use href="#icon-avatar"></use></svg>
+          </div>
+          <div class="sender-meta">
+            <span class="sender-name" id="sender-name-display">Анонимный теневой рекрутер</span>
+            <span class="sender-channel">Входящий закрытый чат • зашифровано</span>
+          </div>
+        </div>
+        <div class="message-text" id="message-text-body"></div>
+      </div>
     </main>
 
-    <footer class="controls-bar">
-      <button class="btn-choice btn-threat-choice" id="btn-threat" aria-label="Угроза">
-        <svg><use href="#icon-cross"></use></svg>
-        <span class="btn-label">Угроза</span>
-      </button>
-      <button class="btn-choice btn-safe-choice" id="btn-safe" aria-label="Безопасно">
-        <svg><use href="#icon-check"></use></svg>
-        <span class="btn-label">Норма</span>
-      </button>
+    <footer class="chat-footer-bar">
+      <svg><use href="#icon-target"></use></svg>
+      <span>Тапай по подозрительным фразам в тексте</span>
     </footer>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ОШИБКИ -->
-  <div id="modal-error" class="modal-overlay" role="dialog" aria-modal="true">
-    <div class="error-dialog">
+  <div id="modal-threat" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="threat-dialog">
       <div class="hazard-badge">
         <svg><use href="#icon-hazard"></use></svg>
       </div>
-      <h2 class="modal-title">ФАТАЛЬНАЯ ОШИБКА!</h2>
-      <div class="modal-penalty-alert">+20 секунд штрафного времени</div>
-      <div class="modal-feedback" id="modal-feedback-text"></div>
-      <button class="btn-continue" id="btn-continue-error">ПОНЯТЬ И ПРОДОЛЖИТЬ</button>
+      <h2 class="threat-title">УГРОЗА ИДЕНТИФИЦИРОВАНА</h2>
+      <div class="threat-subtitle" id="modal-threat-badge">Все 3 красных флага раскрыты!</div>
+      <div class="feedback-box" id="modal-feedback-text"></div>
+      <button class="btn-next-case" id="btn-next-case">СЛЕДУЮЩЕЕ ДЕЛО</button>
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО ЗАВЕРШЕНИЯ -->
   <div id="modal-finish" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="finish-dialog">
       <div class="shield-badge">
         <svg><use href="#icon-shield"></use></svg>
       </div>
-      <h2 class="finish-title">Аудит успешно пройден!</h2>
-      <p class="finish-subtitle">Все угрозы распознаны, колода полностью освоена.</p>
+      <h2 class="finish-title">Все дела закрыты!</h2>
+      <p class="finish-subtitle">Кибераудит завершен. Все триггеры вербовки разоблачены.</p>
 
       <div class="stats-table">
         <div class="stats-item">
-          <span class="label">⏱ Итоговое время:</span>
+          <span class="label">⏱ Затраченное время:</span>
           <span class="val highlight" id="stat-final-time">00:00</span>
         </div>
         <div class="stats-item">
-          <span class="label">✓ Успешно проанализировано:</span>
-          <span class="val" id="stat-total-cards">25 из 25</span>
+          <span class="label">🔍 Раскрыто криминальных дел:</span>
+          <span class="val" id="stat-cases-count">10 из 10 (100%)</span>
         </div>
         <div class="stats-item">
-          <span class="label">⚠️ Совершено ошибок:</span>
+          <span class="label">🚩 Найдено «красных флагов»:</span>
+          <span class="val" style="color: #f87171;">30 из 30</span>
+        </div>
+        <div class="stats-item">
+          <span class="label">⚠️ Ошибочных срабатываний:</span>
           <span class="val" id="stat-mistakes-count">0</span>
-        </div>
-        <div class="stats-item">
-          <span class="label">🛡 Уровень готовности:</span>
-          <span class="val" style="color: #34d399;">ВЫСОКИЙ (100%)</span>
         </div>
       </div>
 
-      <button class="btn-download-cert" id="btn-download-cert">
+      <button class="btn-download-act" id="btn-download-act">
         <svg><use href="#icon-download"></use></svg>
-        СКАЧАТЬ СЕРТИФИКАТ (PNG 3:4)
+        СКАЧАТЬ АКТ АУДИТА (PNG 3:4)
       </button>
-      <button class="btn-restart" id="btn-restart">ПРОЙТИ ЗАНОВО</button>
+      <button class="btn-restart" id="btn-restart">НАЧАТЬ ЗАНОВО</button>
     </div>
   </div>
 
   <script>
-    // --- БАЗА ДАННЫХ УГРОЗ И БЕЗОПАСНЫХ СОСТОЯНИЙ ---
-    const rawDatabase = [
+    const rawCases = [
       {
-        type: "threat",
-        context: "СООБЩЕНИЕ В TELEGRAM ОТ АНОНИМА",
-        text: "Ищешь легкий кэш? Сдай в аренду свою карту на пару дней для P2P-переводов крипты. Платим 15 000 руб. в сутки. Никаких рисков, всё легально, ты просто транзит.",
-        feedback: "ТЫ СТАЛ ДРОППЕРОМ! Передача карты – это ст. 187 УК РФ (до 6 лет) и соучастие в отмывании денег. Твои счета заблокируют по 115-ФЗ, а жертвы через суд взыщут с тебя все украденные миллионы по ст. 1102 ГК РФ."
+        title: "Вербовка дроппера",
+        sender: "Анонимный теневой рекрутер",
+        htmlText: "Бро, салют! Вижу ты в теме крипты и ищешь темки. Есть <span class='chunk' data-type='fake'>варик пассивного заработка</span>, тема вообще белая. Нужно просто <span class='chunk' data-type='flag'>сдать в аренду личный кабинет Сбера</span> под P2P-арбитраж. Обороты будут небольшие, мы сами все гоняем, это <span class='chunk' data-type='flag'>абсолютно легально, это просто транзит</span>. Платим стабильно и без задержек, <span class='chunk' data-type='flag'>по 10к в неделю за каждую карту</span>. Заинтересовал профит?",
+        feedback: "СТАТУС: ДРОППЕРСТВО. Передача доступа к счету – преступление по ст. 187 УК РФ (до 6 лет колонии). Счета заблокируют по 115-ФЗ. Обманутые жертвы взыщут с вас украденные деньги через суд (ст. 1102 ГК РФ). Если вам нет 18 лет, долг по иску ляжет на родителей (ст. 1074 ГК РФ)."
       },
       {
-        type: "threat",
-        context: "ТЕНЕВОЙ ЧАТ (VK / TELEGRAM)",
-        text: "Нужны решительные парни. Работа простая: кинуть коктейль Молотова в релейный шкаф на ЖД путях. Снимаешь на видео – получаешь 50к криптой. Координаты скину.",
-        feedback: "ВЕРБОВКА ДИВЕРСАНТОВ! Это не хулиганство. Деяние строго квалифицируется как Диверсия (ст. 281 УК РФ) или Теракт (ст. 205 УК РФ). Ответственность с 14 лет. Наказание: вплоть до 25 лет лишения свободы."
+        title: "Коммерческий саботаж",
+        sender: "Анонимный куратор",
+        htmlText: "Привет. Ищешь реальный кэш, а не <span class='chunk' data-type='fake'>копейки на раздаче листовок</span>? Работа разовая, плачу в USDT. Надо <span class='chunk' data-type='flag'>кинуть коктейль в релейный шкаф</span> на ж/д перегоне за городом. Рисков вообще ноль, мы проверяли, <span class='chunk' data-type='flag'>там нет камер</span>, сделаешь дело ночью и скинешь видеоотчет. Оплата топ – <span class='chunk' data-type='flag'>сразу 1500 баксов на криптокошелек</span> после пруфов. Согласен?",
+        feedback: "СТАТУС: ВЕРБОВКА ДИВЕРСАНТА. Поджог релейного шкафа квалифицируется как диверсия (ст. 281 УК РФ) или теракт (ст. 205 УК РФ). Максимальное наказание – пожизненное лишение свободы. Иллюзия отсутствия камер – ловушка: исполнителей вычисляют по биллингу телефонов. Заказчик всегда сдает исполнителя."
       },
       {
-        type: "safe",
-        context: "EMAIL / ПУШ ОТ ГОСУСЛУГ",
-        text: "Уведомление от ФНС России: Вам начислен налог на имущество физических лиц за 2025 год в размере 1250 руб. Срок уплаты – не позднее 1 декабря 2026 года.",
-        feedback: "БЕЗОПАСНО. Это штатное уведомление налоговой. Оно не содержит ссылок на левые сайты и не требует диктовать СМС-коды. Оплата производится строго внутри официального защищенного приложения ФНС."
+        title: "Социальная инженерия",
+        sender: "Следователь ФСБ Соколов",
+        htmlText: "Здравствуйте. Майор ФСБ Соколов. Зафиксирована утечка ваших данных, прямо сейчас <span class='chunk' data-type='fake'>на ваше имя пытаются оформить кредит</span> на финансирование запрещенных организаций. Это статья о госизмене. Чтобы отменить операцию, нужно срочно <span class='chunk' data-type='flag'>перевести все сбережения на безопасный счет</span> Центробанка. Действовать надо быстро, <span class='chunk' data-type='flag'>никому не сообщайте о нашем разговоре</span>, иначе привлечем за разглашение тайны следствия. <span class='chunk' data-type='flag'>Жду квитанцию о переводе</span> в этот чат для отчета.",
+        feedback: "СТАТУС: ТЕЛЕФОННЫЙ СКАМ. Классическое мошенничество (ст. 159 УК РФ). Настоящие сотрудники спецслужб не звонят в мессенджерах и не используют мифические «безопасные счета». Угроза госизменой и требование изоляции – жесткая манипуляция для отключения критического мышления."
       },
       {
-        type: "threat",
-        context: "ЗВОНОК В WHATSAPP («ПОМОЩНИК СУДЬИ»)",
-        text: "Здравствуйте, вам заказное письмо из суда. Чтобы оформить электронную доставку и не приходить лично, продиктуйте 6-значный код из СМС, которое вам сейчас пришло от Госуслуг.",
-        feedback: "УГОН АККАУНТА! Госведомства не звонят в мессенджерах. Передача кода ведет к утрате контроля над аккаунтом (ст. 272 УК РФ). Злоумышленники мгновенно оформят на тебя микрозаймы с огромными процентами."
+        title: "Фейковый работодатель",
+        sender: "Менеджер по подбору персонала",
+        htmlText: "Добрый день! Ваше тестовое нас впечатлило, <span class='chunk' data-type='fake'>готовы взять вас на удаленку</span> с окладом 80к. Но для начала нашей службе безопасности нужно проверить вас и <span class='chunk' data-type='flag'>оформить электронный пропуск</span>. Для привязки корпоративного зарплатного проекта <span class='chunk' data-type='flag'>введите полные реквизиты вашей карты</span> по ссылке ниже. Как только <span class='chunk' data-type='flag'>пройдет тестовое списание 10 рублей</span>, мы пришлем трудовой договор на подпись.",
+        feedback: "СТАТУС: HR-ФИШИНГ. Это фишинг для хищения средств (ст. 159.6 УК РФ). Реальная компания никогда не просит полные реквизиты (особенно CVC-код) и не проводит «тестовые списания» до найма. Ввод данных по ссылке приведет к списанию всех денег."
       },
       {
-        type: "threat",
-        context: "СООБЩЕНИЕ В WHATSAPP ОТ «ЗНАКОМОГО»",
-        text: "Привет! Выручай, моя племяшка в финале конкурса рисунков, не хватает 5 голосов до путевки! Проголосуй за Алису по ссылке, там надо только номер телефона ввести: http://kids-vote-2026.ru",
-        feedback: "ФИШИНГ! Аккаунт знакомого взломан. Переход по ссылке и авторизация приведут к перехвату твоей сессии мессенджера (ст. 272 УК РФ). Дальше от твоего имени всем контактам полетят просьбы занять денег."
+        title: "Угон аккаунта",
+        sender: "Друг из списка контактов",
+        htmlText: "Приветик! Слушай, выручи плиз) Моя младшая сестра участвует в конкурсе рисунков, <span class='chunk' data-type='fake'>ей не хватает буквально пары голосов</span> до победы. <span class='chunk' data-type='flag'>Перейди по ссылке и проголосуй</span> за номер 7. Там нужно будет авторизоваться на портале и <span class='chunk' data-type='flag'>ввести код из СМС</span>, чтобы голос точно засчитали. <span class='chunk' data-type='flag'>Сделай прям сейчас</span>, пожалуйста, голосование через час закрывается, очень надо!",
+        feedback: "СТАТУС: ВЗЛОМ АККАУНТА. Аккаунт друга взломан. СМС-код – это пароль для доступа к Telegram или Госуслугам. Передача кода квалифицируется как неправомерный доступ к компьютерной информации (ст. 272 УК РФ). Ваш профиль используют для обмана других и оформления микрозаймов."
       },
       {
-        type: "threat",
-        context: "ГОЛОСОВОЕ СООБЩЕНИЕ ОТ ДРУГА",
-        text: "[Тревожный голос друга]: Брат, я в жесткое ДТП попал, виноват. Чтобы без ментов решить, надо срочно 30к на эту карту скинуть. Не звони, я не могу говорить! Выручай!",
-        feedback: "ИИ-ДИПФЕЙК! Мошенники украли аккаунт друга и сгенерировали клон его голоса через нейросеть. Перевод средств приведет к потере денег (ст. 159 УК РФ). Необходимо положить трубку и позвонить лично по сотовой связи."
+        title: "Скам на маркетплейсе",
+        sender: "Покупатель",
+        htmlText: "Привет! Готов забрать твою плойку без торга сегодня же. Только я сейчас <span class='chunk' data-type='fake'>в другом городе в командировке</span>, давай оформим доставку? <span class='chunk' data-type='flag'>Скинь свой номер, перейдем в Телегу</span>, там удобнее обсудить детали. Я уже все оплатил на сайте, вот тебе <span class='chunk' data-type='flag'>ссылка на получение средств от Авито.Доставки</span>. Просто <span class='chunk' data-type='flag'>введи номер карты, куда зачислить деньги</span>, и жди курьера вечером.",
+        feedback: "СТАТУС: ФИШИНГ. Увод в сторонний мессенджер – главный маркер мошенничества (ст. 159 УК РФ). Официальная оплата происходит исключительно внутри платформы маркетплейса. Внешних ссылок для «получения средств» не существует. Ввод данных карты приведет к хищению всех денег."
       },
       {
-        type: "threat",
-        context: "НАКЛЕЙКА С QR-КОДОМ НА ЭЛЕКТРОСАМОКАТЕ",
-        text: "АКЦИЯ 2026! Отсканируй этот QR-код, чтобы получить скидку 50% на поездку. Мгновенная оплата аренды по СБП на нашем партнерском сайте whoosh-promo.io.",
-        feedback: "КВИШИНГ (QR-ФИШИНГ)! Злоумышленники наклеили поддельный код поверх легального. Он ведет на мошеннический сайт оплаты. Ты потеряешь деньги, сольешь данные карты, а самокат так и не разблокируется."
+        title: "Эксторшн (Шантаж)",
+        sender: "Виртуальная девушка",
+        htmlText: "Зай, тут такое дело... Я случайно сохранила ту твою фотку без одежды и <span class='chunk' data-type='fake'>она улетела в облако к моему бывшему</span>. Он оказался конченым хакером и теперь грозится <span class='chunk' data-type='flag'>слить все твои фото твоей маме и друзьям</span> из подписок в ВК. Пишет, что <span class='chunk' data-type='flag'>если не перевести ему 50 тысяч до полуночи</span>, он нажмет кнопку «отправить». Давай <span class='chunk' data-type='flag'>скинемся и заплатим ему</span>, я уже нашла половину суммы!",
+        feedback: "СТАТУС: ВЫМОГАТЕЛЬСТВО. Это уголовное преступление: вымогательство (ст. 163 УК РФ) и нарушение неприкосновенности частной жизни (ст. 137 УК РФ). Платить нельзя – шантаж не прекратится никогда. Виртуальная подруга и шантажист – одно лицо. Блокируйте контакт и идите в МВД."
       },
       {
-        type: "safe",
-        context: "ПУШ-УВЕДОМЛЕНИЕ ОТ БАНКА",
-        text: "Зачисление: 1 500 ₽. Перевод по СБП от Мария И. Сообщение: «За обед в универе». Доступный баланс: 12 450 ₽.",
-        feedback: "БЕЗОПАСНО. Стандартное системное пуш-уведомление СБП внутри банковского клиента. Оно не содержит подозрительных ссылок, не требует ввода кодов и не призывает к паническим действиям."
+        title: "Обнал госсубсидий",
+        sender: "Теневой «помогала»",
+        htmlText: "Народ, у кого остались деньги на Пушке и кто <span class='chunk' data-type='fake'>не хочет идти в эти унылые театры</span>? Есть крутая тема <span class='chunk' data-type='flag'>вывести баланс Пушкинской карты</span> в реал. Покупаете билеты на наши фейковые мероприятия, а мы возвращаем вам 50% на Тинькофф. Кидайте <span class='chunk' data-type='flag'>реквизиты карты и СМС-код для подтверждения</span> в личку. Тема <span class='chunk' data-type='flag'>работает без последствий</span>, куча отзывов в закрепе, все ровно!",
+        feedback: "СТАТУС: ХИЩЕНИЕ ГОССУБСИДИЙ. Законных способов снять деньги с Пушкинской карты нет. Соглашаясь на эту схему, вы становитесь соучастником мошенничества (ст. 159.2 УК РФ, штраф до 300к или ограничение свободы). Передача данных карты приведет к потере как субсидии, так и личных денег."
       },
       {
-        type: "threat",
-        context: "СООБЩЕНИЕ В TELEGRAM (АВАТАР РЕКТОРА)",
-        text: "Здравствуйте. В университете проходит тайная проверка ФСБ из-за утечки данных. Сейчас с вами свяжется следователь Смирнов. Окажите ему полное содействие, дело строго конфиденциально.",
-        feedback: "ДАВЛЕНИЕ АВТОРИТЕТОМ! Руководство ВУЗа никогда не рассылает поручения от спецслужб в мессенджерах. Дальше фальшивый майор заставит тебя снять наличные и перевести на «безопасный счет»."
+        title: "Крипто-пирамида",
+        sender: "«Успешный трейдер»",
+        htmlText: "Бро, твой тестовый депозит отработал на 1000%! Мы <span class='chunk' data-type='fake'>успешно крутанули связку на DEX-бирже</span>, твоя чистая прибыль составила 4500 USDT. Деньги уже лежат на смарт-контракте, можешь выводить. Единственный момент: биржа просит <span class='chunk' data-type='flag'>оплатить комиссию сети за транзакцию</span>. Просто <span class='chunk' data-type='flag'>закинь 50 баксов за gas fee</span> на этот адрес, и система автоматически <span class='chunk' data-type='flag'>разморозит твой выигрыш</span>.",
+        feedback: "СТАТУС: СКАМ-ИНВЕСТИЦИИ. Это скам-схема «Экзит-скам» (ст. 159 УК РФ). Легальные криптобиржи автоматически вычитают комиссию сети из суммы перевода, а не требуют отдельных депозитов. Никакой прибыли нет: мошенники будут тянуть из вас деньги под видом налогов и комиссий, пока вы платите."
       },
       {
-        type: "threat",
-        context: "СДЕЛКА НА АВИТО (ПЕРЕХОД В WHATSAPP)",
-        text: "Здравствуйте! Я всё оплатил через Авито-доставку, вот ссылка для подтверждения получения вами средств: https://avito-secure-pay24.ru/receive. Переходите и вводите данные карты.",
-        feedback: "КЛАССИЧЕСКИЙ ФИШИНГ! Официальная оплата происходит исключительно ВНУТРИ платформы маркетплейса. Внешних ссылок для «получения средств» не существует. Ввод данных карты приведет к хищению твоих денег."
-      },
-      {
-        type: "threat",
-        context: "БОТ В TELEGRAM «ЗАРАБОТОК НА ОЗВУЧКЕ»",
-        text: "Тестируем новую ИИ-модель! Платим 3000 руб за 5 минут. Отправь в бота два голосовых: «Привет, это я, срочно нужны деньги на эту карту» и «Да, подтверждаю перевод, всё верно».",
-        feedback: "КРАЖА БИОМЕТРИИ! Ты сам записываешь образцы своего голоса для создания высококачественных дипфейков. Завтра эти аудиозаписи будут отправлены твоей маме с требованием срочного перевода денег."
-      },
-      {
-        type: "safe",
-        context: "СИСТЕМНЫЙ ЧАТ TELEGRAM (СИНЯЯ ГАЛОЧКА)",
-        text: "Новый вход в ваш аккаунт. Устройство: Mac OS, Desktop. Локация: Москва, Россия. Если это не вы, перейдите в Настройки > Устройства и завершите этот подозрительный сеанс.",
-        feedback: "БЕЗОПАСНО. Это официальное сервисное уведомление мессенджера. Система не просит пересылать кому-либо СМС-коды или переходить по левым ссылками. Если вход чужой – просто нажми «Завершить сеанс» в настройках."
-      },
-      {
-        type: "threat",
-        context: "ЗВОНОК С НЕИЗВЕСТНОГО НОМЕРА",
-        text: "Старший следователь ФСБ. С вашего счета зафиксирован перевод на финансирование ВСУ. Это госизмена! Чтобы избежать ареста, снимите все наличные и переведите на резервный счет Центробанка.",
-        feedback: "ТЕЛЕФОННЫЙ СКАМ! Силовики не решают вопросы госизмены по телефону и не требуют переводить деньги через банкоматы. Испугавшись прессинга, жертва добровольно отдает все накопления мошенникам."
-      },
-      {
-        type: "threat",
-        context: "КОММЕНТАРИИ В VK / ЧАТ В TELEGRAM",
-        text: "Куплю твою Пушкинскую карту! Зачем ей лежать без дела? Скидывай реквизиты, я забираю ее за 3000 рублей реалом, а билеты покупаю себе. Пиши в личку, оплата сразу на Сбер.",
-        feedback: "ОБНАЛИЧИВАНИЕ ГОССУБСИДИЙ! Вывод средств с соцкарты жестко квалифицируется как мошенничество при получении выплат (ст. 159.2 УК РФ). Карта будет заблокирована, а тебе грозит уголовная ответственность."
-      },
-      {
-        type: "threat",
-        context: "СООБЩЕНИЕ ОТ «СЛУЖБЫ БЕЗОПАСНОСТИ ЦБ»",
-        text: "Ваш счет заморожен антифрод-системой из-за превышения лимитов СБП. Для разблокировки и верификации личности переведите 500 рублей на безопасный транзитный счет. Сумма вернется.",
-        feedback: "УЛОВКА С ТЕСТОВЫМ ПЛАТЕЖОМ! Банк России не работает с физлицами и не просит переводов для «разблокировки». Это приманка, после которой мошенники выманят у тебя пароли и украдут всё остальное."
-      },
-      {
-        type: "safe",
-        context: "СМС ОТ КОРОТКОГО НОМЕРА 900",
-        text: "Вы исчерпали лимит бесплатных переводов СБП в этом месяце (100 000 руб.). На следующие переводы будет начисляться комиссия 0,5%, макс. 1500 руб. СберБанк.",
-        feedback: "БЕЗОПАСНО. Информационное уведомление банка о тарифах, регламентированных ЦБ РФ. Сообщение просто констатирует факт превышения лимита. Оно не содержит ссылок и не просит назвать код."
-      },
-      {
-        type: "threat",
-        context: "КРИПТО-БОТ (С ОПЕЧАТКОЙ BINNANCE)",
-        text: "Вы выиграли 0.5 BTC (более $30,000) в розыгрыше! Чтобы забрать приз, привяжите свой кошелек и оплатите комиссию сети (Gas fee) в размере $50 на указанный адрес.",
-        feedback: "СКАМ НА ЖАДНОСТИ (Fee Fraud). Оплатив «комиссию сети», ты не получишь никакого приза. Легальные криптобиржи никогда не требуют вносить авансовый депозит для разблокировки выигранных средств."
-      },
-      {
-        type: "threat",
-        context: "ВАКАНСИЯ В СТУДЕНЧЕСКОЙ ГРУППЕ",
-        text: "Срочно требуется Менеджер по работе с клиентами. Работа 2 часа в день. Задача: принимать платежи от клиентов на свою карту и отправлять их на счета компании. ЗП 50 000 руб/мес.",
-        feedback: "ВЕРБОВКА ДРОППЕРА (Заливщик)! Через твой счет будут отмывать украденные у пенсионеров деньги. Итог: уголовное дело (ст. 187 и 174 УК РФ) и пожизненный запрет на обслуживание в банках по 115-ФЗ."
-      },
-      {
-        type: "threat",
-        context: "НАКЛЕЙКА С QR-КОДОМ НА ПАРКОМАТЕ",
-        text: "Внимание! Терминал не работает по техническим причинам. Оплатите парковку онлайн в 1 клик, отсканировав этот QR-код, чтобы избежать штрафа 5000 рублей от ЦОДД.",
-        feedback: "КВИШИНГ. Сканирование приведет на фишинговый сайт, который украдет реквизиты карты. Муниципальные службы чинят терминалы системно и никогда не используют кустарные бумажные наклейки для оплаты."
-      },
-      {
-        type: "safe",
-        context: "ПУШ-УВЕДОМЛЕНИЕ ГОСУСЛУГ",
-        text: "На вашу Пушкинскую карту начислен лимит на 2026 год в размере 5000 рублей. Вы можете потратить их на билеты в музеи, театры и кино (на российские фильмы).",
-        feedback: "БЕЗОПАСНО. Легальное автоматическое начисление целевых средств государством. Приложение просто информирует о пополнении баланса и не требует авторизации по сторонним ссылкам."
-      },
-      {
-        type: "threat",
-        context: "EMAIL НА УЧЕБНУЮ/РАБОЧУЮ ПОЧТУ",
-        text: "IT-отдел ВУЗа: В связи с кибератаками, мы внедряем новую систему защиты. Срочно отсканируйте этот QR-код вашим приложением Authenticator для синхронизации, иначе аккаунт отчислят.",
-        feedback: "AiTM ФИШИНГ! Сканирование кода передаст хакерам твой сессионный токен. Злоумышленники прозрачно обойдут систему двухфакторной аутентификации (2FA) и получат полный контроль над твоим аккаунтом."
-      },
-      {
-        type: "threat",
-        context: "АВТОРИЗАЦИЯ В ПУБЛИЧНОМ WI-FI (КАФЕ)",
-        text: "Добро пожаловать в бесплатную сеть Free_WiFi_Cafe! Для получения доступа к высокоскоростному интернету авторизуйтесь через ваши Госуслуги или введите логин/пароль от Telegram.",
-        feedback: "ПОДДЕЛЬНАЯ ТОЧКА ДОСТУПА (Rogue Wi-Fi). Хакеры развернули сеть-клон. Ввод пароля от Госуслуг или Telegram отправляет данные напрямую в базу мошенников (ст. 272 УК РФ). Используй сотовый интернет."
-      },
-      {
-        type: "threat",
-        context: "СООБЩЕНИЕ В МЕССЕНДЖЕРЕ ОТ АНОНИМА",
-        text: "Я взломал твою вебку и записал, чем ты занимаешься по ночам. Видео загружено на сервер. Переведи 10 000 руб на криптокошелек, иначе разошлю этот позор всем твоим друзьям и преподам.",
-        feedback: "КИБЕРШАНТАЖ (Эксторшн). В 99% случаев компромата не существует – это массовая слепая рассылка на испуг (Вымогательство, ст. 163 УК РФ). Оплата гарантирует лишь новые требования денег."
-      },
-      {
-        type: "threat",
-        context: "БОТ МАГАЗИНА В TELEGRAM",
-        text: "Оригинальные кроссовки Nike со склада в обход санкций! Скидка 40% только сегодня. Оплата прямым переводом на карту физлица (нашего менеджера), доставка курьером завтра. Скиньте чек в чат.",
-        feedback: "СКАМ-ШОП! Оплата прямым переводом на карту физлица (P2P) полностью лишает покупателя защиты Закона о правах потребителя. Получив средства на карту дропа, администратор просто заблокирует тебя."
-      },
-      {
-        type: "threat",
-        context: "ВСПЛЫВАЮЩЕЕ ОКНО В БРАУЗЕРЕ ТЕЛЕФОНА",
-        text: "ВАЖНО! Ваш телефон заражен 3 вирусами. Батарея повреждена на 25%. Немедленно установите приложение «Security Defender» из нашего профиля конфигурации, чтобы очистить устройство!",
-        feedback: "ТАКТИКА ЗАПУГИВАНИЯ (Scareware). Операционные системы (iOS/Android) не выдают системных оповещений внутри браузера. Установка левого профиля передаст мошенникам тотальный контроль над смартфоном."
+        title: "Вербовка курьера",
+        sender: "Менеджер логистики",
+        htmlText: "Требуются выездные курьеры в вашем городе! Обязанности элементарные: <span class='chunk' data-type='flag'>приезжать на адрес и забирать наличку</span>. Работаем с <span class='chunk' data-type='fake'>должниками и уклонистами от налогов</span>, поэтому забираем кэш, все анонимно. С каждой заявки <span class='chunk' data-type='flag'>оставляешь себе 5%, остальное кидаешь на крипту</span> через терминал. Мы даем <span class='chunk' data-type='flag'>полную защиту от ментов</span> и оплачиваем такси до адреса. Готов начать сегодня?",
+        feedback: "СТАТУС: КУРЬЕР МОШЕННИКОВ. Вы становитесь соучастником организованного мошенничества (ст. 159 УК РФ). Курьеры забирают последние сбережения у обманутых пенсионеров. Курьер – расходный материал: его арестовывают за 2-3 дня по камерам. Суд обяжет выплатить всю сумму ущерба потерпевшим."
       }
     ];
 
-    // Нормализация типографики
-    const cleanDatabase = rawDatabase.map((item, idx) => {
-      let t = item.text.replace(/—/g, '–');
-      let f = item.feedback.replace(/—/g, '–');
-      return {
-        id: idx + 1,
-        type: item.type,
-        context: item.context,
-        text: t,
-        feedback: f
-      };
-    });
-
-    // --- СОСТОЯНИЕ ПРИЛОЖЕНИЯ ---
-    let deck = [];
-    let initialCount = cleanDatabase.length;
-    let completedCount = 0;
+    let cases = [];
+    let currentCaseIndex = 0;
+    let foundFlagsCount = 0;
     let mistakesCount = 0;
-    let activeCardCtx = null;
 
     let timerInterval = null;
     let elapsedSeconds = 0;
-    let isPaused = false;
-    let sessionStart = null;
-    let sessionEnd = null;
+    let isTimerPaused = false;
+    let sessionStartTime = null;
 
-    // Звуковой синтезатор (Web Audio API)
     let audioCtx = null;
     function initAudio() {
       try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx && !audioCtx) {
-          audioCtx = new AudioCtx();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass && !audioCtx) {
+          audioCtx = new AudioContextClass();
         }
         if (audioCtx && audioCtx.state === 'suspended') {
           audioCtx.resume();
@@ -1090,33 +1145,36 @@
       if (!audioCtx) return;
       try {
         const now = audioCtx.currentTime;
-        if (type === 'success') {
-          const freqs = [587.33, 739.99, 880.00]; // D5, F#5, A5
-          freqs.forEach((freq, idx) => {
+        if (type === 'flag') {
+          // Мажорный отклик при находке флага
+          const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
+          freqs.forEach((freq, i) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-            gain.gain.setValueAtTime(0.08, now + idx * 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.04 + 0.28);
+            osc.frequency.setValueAtTime(freq, now + i * 0.04);
+            gain.gain.setValueAtTime(0.09, now + i * 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.04 + 0.28);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.start(now + idx * 0.04);
-            osc.stop(now + idx * 0.04 + 0.3);
+            osc.start(now + i * 0.04);
+            osc.stop(now + i * 0.04 + 0.3);
           });
         } else if (type === 'error') {
+          // Низкий тон ошибки
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, now);
-          osc.frequency.linearRampToValueAtTime(90, now + 0.3);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.linearRampToValueAtTime(80, now + 0.28);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
           osc.connect(gain);
           gain.connect(audioCtx.destination);
           osc.start(now);
-          osc.stop(now + 0.33);
+          osc.stop(now + 0.31);
         } else if (type === 'fanfare') {
+          // Финальный аккорд победы
           const chord = [523.25, 659.25, 783.99, 1046.50];
           chord.forEach((freq, i) => {
             const osc = audioCtx.createOscillator();
@@ -1134,7 +1192,6 @@
       } catch (err) {}
     }
 
-    // Форматирование времени
     function formatTime(sec) {
       const m = Math.floor(sec / 60);
       const s = sec % 60;
@@ -1143,9 +1200,9 @@
 
     function startTimer() {
       if (timerInterval) return;
-      sessionStart = new Date();
+      sessionStartTime = new Date();
       timerInterval = setInterval(() => {
-        if (!isPaused) {
+        if (!isTimerPaused) {
           elapsedSeconds++;
           document.getElementById('timer-display').textContent = formatTime(elapsedSeconds);
         }
@@ -1153,23 +1210,22 @@
     }
 
     function pauseTimer() {
-      isPaused = true;
+      isTimerPaused = true;
     }
 
     function resumeTimer() {
-      isPaused = false;
+      isTimerPaused = false;
     }
 
     function stopTimer() {
       clearInterval(timerInterval);
       timerInterval = null;
-      sessionEnd = new Date();
     }
 
-    function addPenaltySeconds(seconds) {
+    function addPenalty(seconds) {
       elapsedSeconds += seconds;
       document.getElementById('timer-display').textContent = formatTime(elapsedSeconds);
-      
+
       const flash = document.getElementById('penalty-flash');
       flash.classList.add('show');
       setTimeout(() => {
@@ -1177,7 +1233,6 @@
       }, 1400);
     }
 
-    // --- ПОЛНОЭКРАННЫЙ РЕЖИМ (FULLSCREEN API) ---
     function requestFullScreenSafe() {
       try {
         const el = document.documentElement;
@@ -1215,14 +1270,12 @@
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
     document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
 
-    // Защита от системных скроллов
     document.addEventListener('touchmove', (e) => {
-      if (!e.target.closest('.card-body') && !e.target.closest('.error-dialog') && !e.target.closest('.finish-dialog')) {
+      if (!e.target.closest('.chat-bubble-card') && !e.target.closest('.threat-dialog') && !e.target.closest('.finish-dialog')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // Инициализация игры
     document.getElementById('btn-start').addEventListener('click', () => {
       initAudio();
       requestFullScreenSafe();
@@ -1230,291 +1283,141 @@
       setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
         document.getElementById('app').classList.add('visible');
-        startTrainer();
+        startSimulator();
       }, 350);
     });
 
     document.getElementById('btn-fullscreen').addEventListener('click', toggleFullScreen);
 
-    function startTrainer() {
-      // Перемешиваем колоду
-      deck = [...cleanDatabase].sort(() => Math.random() - 0.5);
-      initialCount = cleanDatabase.length;
-      completedCount = 0;
+    function startSimulator() {
+      // Перемешиваем кейсы
+      cases = [...rawCases].sort(() => Math.random() - 0.5);
+      currentCaseIndex = 0;
       mistakesCount = 0;
       elapsedSeconds = 0;
-      isPaused = false;
+      isTimerPaused = false;
       document.getElementById('timer-display').textContent = '00:00';
       startTimer();
-      renderNextCard();
+      loadCase(currentCaseIndex);
     }
 
-    function updateCounter() {
-      const currentDone = initialCount - deck.length + 1;
-      const displayNum = Math.min(currentDone, initialCount);
-      document.getElementById('counter-display').innerHTML = `<strong>${displayNum}</strong> / ${initialCount}`;
-    }
-
-    // Адаптивное скрытое масштабирование текста карточки
-    function fitText(element, text, container) {
-      const measurer = document.getElementById('text-measurer');
-      measurer.textContent = text;
-      
-      const rect = container.getBoundingClientRect();
-      const maxW = Math.max(rect.width - 40, 200);
-      const maxH = Math.max(rect.height - 110, 160);
-
-      measurer.style.width = maxW + 'px';
-      let fontSize = window.innerWidth > 600 ? 20 : 18;
-      measurer.style.fontSize = fontSize + 'px';
-
-      while ((measurer.scrollHeight > maxH || measurer.scrollWidth > maxW) && fontSize > 11) {
-        fontSize -= 0.5;
-        measurer.style.fontSize = fontSize + 'px';
+    function updateTrackerUI() {
+      document.getElementById('clues-count').textContent = `${foundFlagsCount} / 3`;
+      for (let i = 0; i < 3; i++) {
+        const slot = document.getElementById(`slot-${i}`);
+        if (i < foundFlagsCount) {
+          slot.classList.add('filled');
+          slot.textContent = '🚩';
+        } else {
+          slot.classList.remove('filled');
+          slot.textContent = `${i + 1}`;
+        }
       }
-
-      element.style.fontSize = fontSize + 'px';
-      element.textContent = text;
     }
 
-    function renderNextCard() {
-      const stack = document.getElementById('cards-stack');
-      stack.innerHTML = '';
-      activeCardCtx = null;
+    function loadCase(index) {
+      const item = cases[index];
+      foundFlagsCount = 0;
+      updateTrackerUI();
 
-      if (deck.length === 0) {
-        finishTraining();
-        return;
-      }
+      document.getElementById('case-count-display').textContent = `ДЕЛО ${index + 1} ИЗ ${cases.length}`;
+      document.getElementById('case-title-display').textContent = item.title;
+      document.getElementById('sender-name-display').textContent = item.sender;
 
-      updateCounter();
+      const chatBubble = document.getElementById('chat-bubble');
+      chatBubble.classList.remove('frozen');
+      chatBubble.scrollTop = 0;
 
-      const currentItem = deck[0];
+      const textBody = document.getElementById('message-text-body');
+      textBody.innerHTML = item.htmlText;
 
-      const card = document.createElement('div');
-      card.className = 'card-element';
-      card.innerHTML = `
-        <div class="stamp-badge stamp-threat">УГРОЗА</div>
-        <div class="stamp-badge stamp-safe">БЕЗОПАСНО</div>
-        <div class="card-context">
-          <span class="card-context-dot"></span>
-          <span>${currentItem.context}</span>
-        </div>
-        <div class="card-body">
-          <div class="card-text" id="active-card-text"></div>
-        </div>
-        <div class="card-footer">
-          <span>← Свайп: Угроза</span>
-          <span>Безопасно: Свайп →</span>
-        </div>
-      `;
-
-      stack.appendChild(card);
-
-      const textEl = card.querySelector('#active-card-text');
-      fitText(textEl, currentItem.text, card);
-
-      bindSwipeToCard(card, currentItem);
-    }
-
-    function bindSwipeToCard(card, itemData) {
-      let isDragging = false;
-      let startX = 0;
-      let startY = 0;
-      let currentX = 0;
-      let currentY = 0;
-      let isAnimating = false;
-
-      const stampThreat = card.querySelector('.stamp-threat');
-      const stampSafe = card.querySelector('.stamp-safe');
-
-      const setStamps = (dx) => {
-        if (dx < -15) {
-          stampThreat.style.opacity = Math.min(Math.abs(dx) / 75, 1);
-          stampSafe.style.opacity = 0;
-        } else if (dx > 15) {
-          stampSafe.style.opacity = Math.min(dx / 75, 1);
-          stampThreat.style.opacity = 0;
-        } else {
-          stampThreat.style.opacity = 0;
-          stampSafe.style.opacity = 0;
-        }
-      };
-
-      const handleDecision = (choice) => {
-        if (isAnimating) return;
-        isAnimating = true;
-
-        const isCorrect = (choice === 'threat' && itemData.type === 'threat') || 
-                          (choice === 'safe' && itemData.type === 'safe');
-
-        if (isCorrect) {
-          // ВЕРНЫЙ ВЫБОР
-          playSound('success');
-          if (navigator.vibrate) navigator.vibrate(30);
-
-          const dir = choice === 'safe' ? 1 : -1;
-          const flyX = dir * (window.innerWidth + 250);
-          card.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-          card.style.transform = `translate3d(${flyX}px, ${currentY}px, 0) rotate(${dir * 25}deg)`;
-
-          setTimeout(() => {
-            deck.shift(); // Удаляем из колоды
-            completedCount++;
-            renderNextCard();
-          }, 280);
-
-        } else {
-          // ОШИБКА
-          playSound('error');
-          if (navigator.vibrate) navigator.vibrate([60, 80, 60]);
-          mistakesCount++;
-
-          // Тряска экрана и карточки
-          const appContainer = document.getElementById('app');
-          appContainer.classList.add('shake');
-          card.style.transition = 'transform 0.25s ease';
-          card.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
-          setStamps(0);
-
-          setTimeout(() => {
-            appContainer.classList.remove('shake');
-          }, 450);
-
-          // Пауза таймера и штраф
-          pauseTimer();
-          addPenaltySeconds(20);
-
-          // Показ модального окна ошибки
-          setTimeout(() => {
-            showErrorModal(itemData);
-            isAnimating = false;
-          }, 300);
-        }
-      };
-
-      activeCardCtx = {
-        triggerAction: (choice) => {
-          if (isAnimating) return;
-          const dx = choice === 'safe' ? 100 : -100;
-          setStamps(dx);
-          handleDecision(choice);
-        }
-      };
-
-      // --- СОБЫТИЯ TOUCH (СМАРТФОНЫ) ---
-      card.addEventListener('touchstart', (e) => {
-        if (isAnimating) return;
-        isDragging = true;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        card.style.transition = 'none';
-      }, { passive: true });
-
-      card.addEventListener('touchmove', (e) => {
-        if (!isDragging || isAnimating) return;
-        currentX = e.touches[0].clientX - startX;
-        currentY = e.touches[0].clientY - startY;
-
-        if (e.cancelable && Math.abs(currentX) > Math.abs(currentY)) {
-          e.preventDefault();
-        }
-
-        const rotate = currentX * 0.055;
-        card.style.transform = `translate3d(${currentX}px, ${currentY * 0.4}px, 0) rotate(${rotate}deg)`;
-        setStamps(currentX);
-      }, { passive: false });
-
-      card.addEventListener('touchend', (e) => {
-        if (!isDragging || isAnimating) return;
-        isDragging = false;
-
-        const threshold = Math.min(window.innerWidth * 0.22, 75);
-        if (currentX < -threshold) {
-          handleDecision('threat');
-        } else if (currentX > threshold) {
-          handleDecision('safe');
-        } else {
-          card.style.transition = 'transform 0.35s ease';
-          card.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
-          setStamps(0);
-        }
+      const chunks = textBody.querySelectorAll('.chunk');
+      chunks.forEach((chunk) => {
+        chunk.addEventListener('click', onChunkClick);
       });
+    }
 
-      // --- СОБЫТИЯ MOUSE (ПК) ---
-      const onMouseDown = (e) => {
-        if (isAnimating || e.button !== 0) return;
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        card.style.transition = 'none';
-      };
+    function onChunkClick(e) {
+      const chunk = e.currentTarget;
+      const type = chunk.getAttribute('data-type');
 
-      const onMouseMove = (e) => {
-        if (!isDragging || isAnimating) return;
-        currentX = e.clientX - startX;
-        currentY = e.clientY - startY;
+      if (chunk.classList.contains('flag-exposed')) {
+        return; // Уже раскрыт
+      }
 
-        e.preventDefault();
-        const rotate = currentX * 0.055;
-        card.style.transform = `translate3d(${currentX}px, ${currentY * 0.3}px, 0) rotate(${rotate}deg)`;
-        setStamps(currentX);
-      };
+      if (type === 'flag') {
+        // УСПЕШНО НАЙДЕННЫЙ КРАСНЫЙ ФЛАГ
+        chunk.classList.add('flag-exposed');
+        chunk.style.cursor = 'default';
+        foundFlagsCount++;
+        playSound('flag');
+        if (navigator.vibrate) navigator.vibrate(35);
+        updateTrackerUI();
 
-      const onMouseUp = () => {
-        if (!isDragging || isAnimating) return;
-        isDragging = false;
-
-        const threshold = 75;
-        if (currentX < -threshold) {
-          handleDecision('threat');
-        } else if (currentX > threshold) {
-          handleDecision('safe');
-        } else {
-          card.style.transition = 'transform 0.35s ease';
-          card.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
-          setStamps(0);
+        if (foundFlagsCount === 3) {
+          // Раскрыты все 3 красных флага в деле
+          setTimeout(() => {
+            handleCaseResolved();
+          }, 450);
         }
-      };
 
-      card.addEventListener('mousedown', onMouseDown);
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      } else if (type === 'fake') {
+        // ОШИБКА: ЛОЖНЫЙ КЛИК
+        mistakesCount++;
+        playSound('error');
+        if (navigator.vibrate) navigator.vibrate([60, 90]);
+
+        const appEl = document.getElementById('app');
+        appEl.classList.add('shake');
+        chunk.classList.add('chunk-error-flash');
+
+        addPenalty(30);
+
+        setTimeout(() => {
+          appEl.classList.remove('shake');
+          chunk.classList.remove('chunk-error-flash');
+        }, 500);
+      }
     }
 
-    // Кнопки управления внизу
-    document.getElementById('btn-threat').addEventListener('click', () => {
-      if (activeCardCtx) activeCardCtx.triggerAction('threat');
-    });
-    document.getElementById('btn-safe').addEventListener('click', () => {
-      if (activeCardCtx) activeCardCtx.triggerAction('safe');
-    });
+    function handleCaseResolved() {
+      const currentCase = cases[currentCaseIndex];
+      const chatBubble = document.getElementById('chat-bubble');
+      chatBubble.classList.add('frozen');
 
-    // Обработка окна ошибки (Mastery Learning)
-    function showErrorModal(item) {
-      document.getElementById('modal-feedback-text').textContent = item.feedback;
-      document.getElementById('modal-error').classList.add('visible');
+      document.getElementById('modal-threat-badge').textContent = `Дело: «${currentCase.title}»`;
+      document.getElementById('modal-feedback-text').innerHTML = currentCase.feedback;
+
+      const nextBtn = document.getElementById('btn-next-case');
+      if (currentCaseIndex === cases.length - 1) {
+        nextBtn.textContent = 'ПОДВЕСТИ ИТОГИ РАССЛЕДОВАНИЯ';
+      } else {
+        nextBtn.textContent = 'СЛЕДУЮЩЕЕ ДЕЛО';
+      }
+
+      pauseTimer();
+      document.getElementById('modal-threat').classList.add('visible');
     }
 
-    document.getElementById('btn-continue-error').addEventListener('click', () => {
-      document.getElementById('modal-error').classList.remove('visible');
-      
-      // Переносим ошибшуюся карточку в конец колоды (Mastery Learning)
-      const failedItem = deck.shift();
-      deck.push(failedItem);
-
+    document.getElementById('btn-next-case').addEventListener('click', () => {
+      document.getElementById('modal-threat').classList.remove('visible');
       resumeTimer();
-      renderNextCard();
+
+      currentCaseIndex++;
+      if (currentCaseIndex < cases.length) {
+        loadCase(currentCaseIndex);
+      } else {
+        finishInvestigation();
+      }
     });
 
-    // Завершение тренировки
-    function finishTraining() {
+    function finishInvestigation() {
       stopTimer();
       playSound('fanfare');
-      if (navigator.vibrate) navigator.vibrate([100, 50, 150]);
+      if (navigator.vibrate) navigator.vibrate([100, 60, 140]);
 
       document.getElementById('stat-final-time').textContent = formatTime(elapsedSeconds);
-      document.getElementById('stat-total-cards').textContent = `${initialCount} из ${initialCount}`;
+      document.getElementById('stat-cases-count').textContent = `${cases.length} из ${cases.length} (100%)`;
       document.getElementById('stat-mistakes-count').textContent = mistakesCount;
 
       document.getElementById('modal-finish').classList.add('visible');
@@ -1522,11 +1425,10 @@
 
     document.getElementById('btn-restart').addEventListener('click', () => {
       document.getElementById('modal-finish').classList.remove('visible');
-      startTrainer();
+      startSimulator();
     });
 
-    // --- ГЕНЕРАТОР ВЕРТИКАЛЬНОГО СЕРТИФИКАТА 3:4 (CANVAS) ---
-    function generateCertificate() {
+    function generateAuditCertificate() {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
@@ -1535,65 +1437,65 @@
       canvas.width = width;
       canvas.height = height;
 
-      // Глубокий кибер-градиент фона
+      // Глубокий темный cyber-градиент
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, '#0a0f1d');
       bgGrad.addColorStop(0.5, '#0f172a');
-      bgGrad.addColorStop(1, '#1e293b');
+      bgGrad.addColorStop(1, '#131d31');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
       // Фоновые кибер-линии
       ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
-      ctx.lineWidth = 2;
-      for (let i = 0; i < width; i += 70) {
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < width; i += 60) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
         ctx.lineTo(i, height);
         ctx.stroke();
       }
-      for (let j = 0; j < height; j += 70) {
+      for (let j = 0; j < height; j += 60) {
         ctx.beginPath();
         ctx.moveTo(0, j);
         ctx.lineTo(width, j);
         ctx.stroke();
       }
 
-      // Карточка сертификата
-      const cardX = 60;
-      const cardY = 70;
-      const cardW = width - 120; // 960
-      const cardH = height - 140; // 1300
+      // Карточка акта аудита
+      const cardX = 54;
+      const cardY = 60;
+      const cardW = width - 108; // 972
+      const cardH = height - 120; // 1320
       const radius = 32;
 
       ctx.save();
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      ctx.shadowBlur = 40;
-      ctx.shadowOffsetY = 20;
-      ctx.fillStyle = '#1e293b';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+      ctx.shadowBlur = 45;
+      ctx.shadowOffsetY = 22;
+      ctx.fillStyle = '#172339';
       roundRect(ctx, cardX, cardY, cardW, cardH, radius, true, false);
       ctx.restore();
 
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#2e3f59';
+      ctx.lineWidth = 2.5;
       roundRect(ctx, cardX, cardY, cardW, cardH, radius, false, true);
 
-      // Верхняя неоновая полоса
-      const neonGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY);
-      neonGrad.addColorStop(0, '#06b6d4');
-      neonGrad.addColorStop(0.5, '#3b82f6');
-      neonGrad.addColorStop(1, '#10b981');
-      ctx.fillStyle = neonGrad;
+      // Верхняя акцентная планка
+      const topBarGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY);
+      topBarGrad.addColorStop(0, '#ef4444');
+      topBarGrad.addColorStop(0.5, '#3b82f6');
+      topBarGrad.addColorStop(1, '#10b981');
+      ctx.fillStyle = topBarGrad;
       roundRectTop(ctx, cardX, cardY, cardW, 14, radius);
 
-      // Щит / Кибер-значок
+      // Значок щита расследования
       const badgeX = width / 2;
-      const badgeY = 205;
-      const badgeR = 52;
+      const badgeY = 195;
+      const badgeR = 50;
 
       ctx.save();
-      ctx.shadowColor = 'rgba(16, 185, 129, 0.5)';
-      ctx.shadowBlur = 30;
+      ctx.shadowColor = 'rgba(16, 185, 129, 0.45)';
+      ctx.shadowBlur = 28;
       ctx.fillStyle = '#10b981';
       ctx.beginPath();
       ctx.arc(badgeX, badgeY, badgeR, 0, Math.PI * 2);
@@ -1603,82 +1505,83 @@
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 44px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🛡', badgeX, badgeY + 16);
+      ctx.fillText('🛡️', badgeX, badgeY + 16);
 
-      // Заголовки сертификата
+      // Заголовки акта
       ctx.textAlign = 'center';
       ctx.fillStyle = '#38bdf8';
       ctx.font = 'bold 22px system-ui, sans-serif';
-      ctx.fillText('СЕРТИФИКАТ УСПЕШНОГО КИБЕРАУДИТА', width / 2, 305);
+      ctx.fillText('СЛЕДСТВЕННЫЙ АКТ КИБЕРАУДИТА', width / 2, 290);
 
       ctx.fillStyle = '#f8fafc';
-      ctx.font = '900 44px system-ui, sans-serif';
-      ctx.fillText('РАДАР УГРОЗ: ФИШИНГ', width / 2, 368);
-      ctx.fillText('И СОЦИАЛЬНАЯ ИНЖЕНЕРИЯ', width / 2, 424);
+      ctx.font = '900 42px system-ui, sans-serif';
+      ctx.fillText('КЕЙС–АНАЛИТИК: ВЕРБОВКА', width / 2, 350);
+      ctx.fillText('И ДРОППЕРСТВО', width / 2, 404);
 
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 21px system-ui, sans-serif';
-      ctx.fillText('Практический аудит кибератак и социнженерии пройден на 100%', width / 2, 478);
+      ctx.font = '600 20px system-ui, sans-serif';
+      ctx.fillText('Все криминальные триггеры и схемы мошенников успешно вскрыты', width / 2, 458);
 
-      // Бейдж 100% Защита
-      const pillW = 380;
+      // Зеленый бейдж 100% готовность
+      const pillW = 390;
       const pillH = 50;
       const pillX = width / 2 - pillW / 2;
-      const pillY = 520;
+      const pillY = 500;
       ctx.fillStyle = '#10b981';
       roundRect(ctx, pillX, pillY, pillW, pillH, 25, true, false);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 22px system-ui, sans-serif';
-      ctx.fillText('★ 100% КИБЕРГРАМОТНОСТЬ ★', width / 2, pillY + 33);
+      ctx.fillText('★ 100% РАСКРЫТИЕ УГРОЗ ★', width / 2, pillY + 33);
 
-      // Блок данных
-      const boxX = 120;
-      const boxY = 615;
-      const boxW = width - 240; // 840
-      const boxH = 460;
+      // Блок таблицы расследования
+      const boxX = 114;
+      const boxY = 595;
+      const boxW = width - 228; // 852
+      const boxH = 480;
 
-      ctx.fillStyle = '#0f172a';
+      ctx.fillStyle = '#0b1120';
       roundRect(ctx, boxX, boxY, boxW, boxH, 22, true, false);
-      ctx.strokeStyle = '#334155';
+      ctx.strokeStyle = '#2e3f59';
       ctx.lineWidth = 1.5;
       roundRect(ctx, boxX, boxY, boxW, boxH, 22, false, true);
 
       const stats = [
-        { label: '⏱  Затраченное время:', val: formatTime(elapsedSeconds), highlight: true },
-        { label: '✓  Угроз и кейсов исследовано:', val: `${initialCount} из ${initialCount} (100%)`, highlight: false },
-        { label: '⚠️  Отработано ошибок в сессии:', val: `${mistakesCount}`, highlight: false },
-        { label: '📅  Дата и время завершения:', val: new Date().toLocaleString('ru-RU'), highlight: false }
+        { label: '⏱  Затраченное время расследования:', val: formatTime(elapsedSeconds), highlight: true },
+        { label: '📁  Разоблачено криминальных кейсов:', val: `${cases.length} из ${cases.length} (100%)`, highlight: false },
+        { label: '🚩  Обнаружено «красных флагов»:', val: '30 из 30', highlight: false },
+        { label: '⚠️  Ложных срабатываний в ходе аудита:', val: `${mistakesCount}`, highlight: false },
+        { label: '📅  Дата и время завершения дела:', val: new Date().toLocaleString('ru-RU'), highlight: false }
       ];
 
-      let currentY = 690;
+      let rowY = 665;
       stats.forEach((row, idx) => {
         ctx.textAlign = 'left';
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '600 23px system-ui, sans-serif';
-        ctx.fillText(row.label, boxX + 40, currentY);
+        ctx.font = '600 22px system-ui, sans-serif';
+        ctx.fillText(row.label, boxX + 40, rowY);
 
         ctx.textAlign = 'right';
         ctx.fillStyle = row.highlight ? '#38bdf8' : '#f8fafc';
-        ctx.font = row.highlight ? 'bold 30px system-ui, sans-serif' : '700 23px system-ui, sans-serif';
-        ctx.fillText(row.val, boxX + boxW - 40, currentY);
+        ctx.font = row.highlight ? 'bold 28px system-ui, sans-serif' : '700 22px system-ui, sans-serif';
+        ctx.fillText(row.val, boxX + boxW - 40, rowY);
 
         if (idx < stats.length - 1) {
           ctx.strokeStyle = '#1e293b';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.moveTo(boxX + 35, currentY + 36);
-          ctx.lineTo(boxX + boxW - 35, currentY + 36);
+          ctx.moveTo(boxX + 35, rowY + 32);
+          ctx.lineTo(boxX + boxW - 35, rowY + 32);
           ctx.stroke();
         }
 
-        currentY += 100;
+        rowY += 86;
       });
 
-      // Штамп верификации
-      const sealW = 480;
+      // Верификационный штамп
+      const sealW = 490;
       const sealH = 46;
       const sealX = width / 2 - sealW / 2;
-      const sealY = 1125;
+      const sealY = 1130;
       ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
       roundRect(ctx, sealX, sealY, sealW, sealH, 12, true, false);
       ctx.strokeStyle = 'rgba(6, 182, 212, 0.35)';
@@ -1688,28 +1591,28 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = '#38bdf8';
       ctx.font = '700 18px system-ui, sans-serif';
-      ctx.fillText('РЕЗУЛЬТАТ ВЕРИФИЦИРОВАН СИСТЕМОЙ LMS', width / 2, sealY + 29);
+      ctx.fillText('РЕЗУЛЬТАТ ЗАФИКСИРОВАН СИСТЕМОЙ LMS', width / 2, sealY + 29);
 
       // Подвал
       ctx.fillStyle = '#64748b';
       ctx.font = '500 18px system-ui, sans-serif';
-      ctx.fillText('Интерактивный тренажер кибербезопасности и противодействия мошенничеству', width / 2, 1240);
-      ctx.fillText('Формат Master Learning • Пропорции сертификата 3:4', width / 2, 1272);
+      ctx.fillText('Интерактивный симулятор-расследование киберпреступлений и дропперства', width / 2, 1240);
+      ctx.fillText('Вертикальный формат акта 3:4 • Автономный тренажер', width / 2, 1272);
 
       // Скачивание PNG
       const link = document.createElement('a');
-      link.download = `Радар_Угроз_Сертификат_${formatTime(elapsedSeconds).replace(':', '-')}.png`;
+      link.download = `Акт_Аудита_Вербовка_${formatTime(elapsedSeconds).replace(':', '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      const btn = document.getElementById('btn-download-cert');
-      const oldHtml = btn.innerHTML;
-      btn.innerHTML = `<svg><use href="#icon-check"></use></svg> СЕРТИФИКАТ СКАЧАН!`;
+      const btn = document.getElementById('btn-download-act');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<svg><use href="#icon-shield"></use></svg> АКТ УСПЕШНО СКАЧАН!`;
       btn.style.background = '#059669';
       setTimeout(() => {
-        btn.innerHTML = oldHtml;
+        btn.innerHTML = originalText;
         btn.style.background = '';
       }, 2500);
     }
@@ -1743,15 +1646,7 @@
       ctx.fill();
     }
 
-    document.getElementById('btn-download-cert').addEventListener('click', generateCertificate);
-
-    window.addEventListener('resize', () => {
-      const activeText = document.getElementById('active-card-text');
-      const activeCard = document.querySelector('.card-element');
-      if (activeText && activeCard) {
-        fitText(activeText, activeText.textContent, activeCard);
-      }
-    });
+    document.getElementById('btn-download-act').addEventListener('click', generateAuditCertificate);
   </script>
 </body>
 </html>
